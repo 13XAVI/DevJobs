@@ -13,7 +13,16 @@ function JobList() {
     axios
       .get("https://prisma-zt8q.onrender.com/jobs")
       .then((res) => {
-        setData(res.data);
+        const newData = res.data.map((job) => {
+          if (job.logoBackground && typeof job.logoBackground === "string") {
+            return {
+              ...job,
+              logoBackground: job.logoBackground.replace(/\s/g, ""),
+            };
+          }
+          return job;
+        });
+        setData(newData);
       })
       .catch((err) => {
         console.log(err);
@@ -29,22 +38,26 @@ function JobList() {
     <div
       className={`${
         theme === "dark" ? "bg-midNigth" : " bg-ligthGray"
-      } grid lg:grid-cols-3 gap-10 ml-60 mr-40 pt-20 pb-5`}
+      } grid grid-cols-1 gap-8 max-w-4xl m-4  sm:mx-auto pt-20 pb-5 sm:grid-cols-3  `}
     >
       {data.map((job) => (
         <div
           key={job.id}
           className={`${
             theme === "dark" ? "bg-VeryDArkBlue" : " bg-white"
-          } rounded-lg px-6 py-8 ring-1 ring-slate-900/5 shadow-xl relative`}
+          } rounded-lg px-4 py-4 ring-1 ring-slate-900/5 shadow-xl relative`}
           onClick={() => handleClick(job.id)}
           style={{ cursor: "pointer" }}
         >
-          <span
-            className={`absolute top-0 left-12 transform -translate-x-1/2 -translate-y-1/2 ${job.logoBackground}|| bg-violete rounded-md p-2 w-10 h-10`}
+          <div
+            className={`absolute top-0 left-12 transform -translate-x-1/2 bg-${job.logoBackground} -translate-y-1/2 rounded-md p-2 w-10 h-10`}
+            style={{
+              backgroundColor: `hsl(${job.logoBackground}) bg-${job.logoBackground}`,
+            }}
           >
-            <img src={job.logo} alt="" className="w-6 h-6 object-fit" />
-          </span>
+            <img src={`../src${job.logo}`} className="w-6 h-6" />
+          </div>
+
           <p className="text-slate-500 flex dark:text-slate-400 mt-2 text-sm gap-2">
             {job.postedAt} . {job.contract}
           </p>
